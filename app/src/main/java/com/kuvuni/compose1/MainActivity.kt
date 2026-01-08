@@ -4,12 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,10 +24,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import com.kuvuni.compose1.ui.components.MyListItem
 import com.kuvuni.compose1.ui.theme.Compose1Theme
 
 /**
@@ -53,27 +59,70 @@ fun Compose1App() {
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
-            AppDestinations.entries.forEach {
+            AppDestinations.entries.forEach { destination ->
                 item(
                     icon = {
                         Icon(
-                            it.icon,
-                            contentDescription = it.label
+                            destination.icon,
+                            contentDescription = destination.label
                         )
                     },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
+                    label = { Text(destination.label) },
+                    selected = destination == currentDestination,
+                    onClick = { currentDestination = destination }
                 )
             }
         }
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Greeting(
-                name = "Patito Kuvuni",
-                modifier = Modifier.padding(innerPadding)
+            Box(modifier = Modifier.padding(innerPadding)) {
+                // Muestra la pantalla correcta según el destino actual
+                when (currentDestination) {
+                    AppDestinations.HOME -> HomeScreen()
+                    AppDestinations.FAVORITES -> PlaceholderScreen(text = "Pantalla de Favoritos")
+                    AppDestinations.PROFILE -> PlaceholderScreen(text = "Pantalla de Perfil")
+                }
+            }
+        }
+    }
+}
+
+/**
+ * La pantalla de inicio, que muestra una lista de items.
+ */
+@Composable
+fun HomeScreen() {
+    val sampleItems = (1..20).map { "Elemento de lista número $it" }
+
+    LazyColumn {
+        items(sampleItems) { item ->
+            MyListItem(
+                headlineText = item,
+                supportingText = "Este es un texto de soporte",
+                leadingContent = {
+                    Icon(Icons.Default.Person, contentDescription = "Icono de Persona")
+                },
+                trailingContent = {
+                    Icon(Icons.Default.Check, contentDescription = "Icono de Check")
+                },
+                onClick = { /* Acción al hacer clic */ }
             )
         }
+    }
+}
+
+/**
+ * Una pantalla genérica para mostrar un texto como marcador de posición.
+ *
+ * @param text El texto a mostrar.
+ */
+@Composable
+fun PlaceholderScreen(text: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text)
     }
 }
 
@@ -101,57 +150,4 @@ enum class AppDestinations(
      * Destino de la pantalla de perfil.
      */
     PROFILE("Profile", Icons.Default.AccountBox),
-}
-
-/**
- * Un composable simple que muestra un mensaje de saludo.
- *
- * @param name El nombre a mostrar en el saludo.
- * @param modifier El modificador a aplicar al composable. Un `Modifier` se utiliza para decorar o agregar comportamiento a un composable de Jetpack Compose. En este caso, permite que el llamador personalice la apariencia o el diseño del `Text`.
- */
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-/**
- * Proporciona una vista previa del composable [Greeting] en Android Studio.
- *
- * La anotación `@Preview` permite a los desarrolladores ver sus composables en el
- * panel de diseño de Android Studio sin necesidad de ejecutar la aplicación en un
- * dispositivo o emulador.
- *
- * La anotación `@Preview` tiene varios parámetros que se pueden usar para personalizar la vista previa.
- * Por ejemplo:
- *  - `name`: para dar un nombre a la vista previa.
- *  - `showSystemUi`: para mostrar la interfaz de usuario del sistema (la barra de estado y la barra de navegación).
- *  - `device`: para previsualizar en un dispositivo específico (por ejemplo, "id:pixel_4").
- *  - `apiLevel`: para previsualizar en un nivel de API específico.
- *  - `locale`: para previsualizar en una configuración regional específica (por ejemplo, "es" para español).
- *  - `showBackground`: para mostrar un fondo predeterminado para el composable.
- *
- * También puedes crear tus propias anotaciones de "multiprevisualización" para combinar
- * múltiples configuraciones de `@Preview`. Esto es útil para previsualizar un composable
- * en diferentes dispositivos, tamaños de fuente o temas a la vez. Por ejemplo, podrías crear
- * una anotación `@DevicePreviews` que combine varias anotaciones `@Preview`:
- *
- * ```
- * @Preview(name = "Pixel 4", device = "id:pixel_4")
- * @Preview(name = "Pixel 7", device = "id:pixel_7")
- * annotation class DevicePreviews
- *
- * @DevicePreviews
- * @Composable
- * fun MyComposablePreview() { ... }
- * ```
- */
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Compose1Theme {
-        Greeting("Android")
-    }
 }
