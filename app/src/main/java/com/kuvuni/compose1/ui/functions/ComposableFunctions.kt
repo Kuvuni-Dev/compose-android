@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -114,7 +114,7 @@ fun ShowConfirmationDialog(showDialog: Boolean, onDismiss: () -> Unit) {
             onConfirmation = onDismiss,
             dialogTitle = "Confirmación",
             dialogText = "¿Estás seguro de que quieres realizar esta acción?",
-            icon = Icons.Filled.Build  //Cambiar icono
+            icon = Icons.Filled.Help
         )
     }
 }
