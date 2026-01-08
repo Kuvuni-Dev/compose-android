@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,19 +57,22 @@ fun MyButton(onClick: () -> Unit, modifier: Modifier = Modifier, text: String) {
  * @param onValueChange La devolución de llamada que se activa cuando el servicio de entrada actualiza el texto.
  * @param modifier El modificador que se aplicará al campo de texto.
  * @param label La etiqueta que se mostrará dentro del campo de texto.
+ * @param visualTransformation Transforma la representación visual del valor del campo de texto.
  */
 @Composable
 fun MyTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: String
+    label: String,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
-        label = { Text(label) }
+        label = { Text(label) },
+        visualTransformation = visualTransformation
     )
 }
 
