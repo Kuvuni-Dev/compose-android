@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.kuvuni.compose1.ui.components.MyListItem
+import com.kuvuni.compose1.ui.functions.ProfileScreen
 import com.kuvuni.compose1.ui.theme.Compose1Theme
 import kotlinx.coroutines.launch
 
@@ -110,7 +111,7 @@ fun Compose1App() {
                         }
                     })
                     AppDestinations.FAVORITES -> PlaceholderScreen(text = "Pantalla de Favoritos")
-                    AppDestinations.PROFILE -> PlaceholderScreen(text = "Pantalla de Perfil")
+                    AppDestinations.PROFILE -> ProfileScreen()
                 }
             }
         }
