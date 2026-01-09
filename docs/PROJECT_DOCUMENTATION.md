@@ -6,8 +6,8 @@ Este documento es una guía de estudio diseñada para que los alumnos aprendan l
 
 ---
 
-## 1. El "Porqué" de Jetpack Compose: Un Nuevo Paradigma
-
+## 1. El "Por qué" de Jetpack Compose: Un Nuevo Paradigma
+ 
 Antes de sumergirnos en el código, es crucial entender qué es Compose y por qué representa un cambio tan importante.
 
 **El Modelo Imperativo (XML tradicional):**
