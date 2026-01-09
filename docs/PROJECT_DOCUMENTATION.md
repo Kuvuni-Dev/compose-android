@@ -1,4 +1,6 @@
-# Guía de Estudio Detallada: Aprendiendo Jetpack Compose con el Proyecto Compose1
+# Guía Maestra de Estudio: Dominando Jetpack Compose con el Proyecto Compose1
+
+**Versión Extendida para Alumnos Principiantes**
 
 Este documento es una guía de estudio diseñada para que los alumnos aprendan los conceptos fundamentales y las mejores prácticas de Jetpack Compose a través del análisis y la expansión del proyecto `Compose1`.
 
@@ -9,145 +11,127 @@ Este documento es una guía de estudio diseñada para que los alumnos aprendan l
 Antes de sumergirnos en el código, es crucial entender qué es Compose y por qué representa un cambio tan importante.
 
 **El Modelo Imperativo (XML tradicional):**
-- **Cómo funciona:** Tú eres el responsable de inicializar los componentes (ej. `findViewById`), decidir *cuándo* actualizar la vista (ej. `textView.setText(...)`) y manejar manualmente los estados.
-- **Desventajas:** A medida que la UI se vuelve compleja, la gestión del estado se convierte en una fuente común de errores (bugs).
+- **Cómo funciona:** Es como dar instrucciones paso a paso a un robot. Tú eres el responsable de inicializar los componentes (`findViewById`), decidir *cuándo* y *cómo* actualizar la vista (`textView.setText(...)`) y manejar manualmente los estados. 
+- **La Metáfora:** Imagina que tienes que actualizar un marcador. Le dices: "Busca el `TextView` con el ID `score_text`. Ahora, cambia su texto al nuevo valor".
+- **Desventajas:** A medida que la UI se vuelve compleja (múltiples marcadores, botones, etc.), la gestión de todos estos "pasos" se convierte en una fuente común de errores (bugs). Es fácil olvidar actualizar una vista o hacerlo en el momento incorrecto.
 
 **El Modelo Declarativo (Jetpack Compose):**
-- **Cómo funciona:** Tú *describes* cómo debería ser la UI en un momento dado, basándote en un estado. No le dices a la UI *cómo* cambiar, solo *cuál* debería ser su apariencia. Cuando el estado cambia, el framework de Compose se encarga automáticamente de actualizar (recomponer) solo las partes de la UI que dependen de ese estado.
-- **Ventajas:** Código más intuitivo, menos propenso a errores y una separación más clara entre el estado de la aplicación y la UI.
+- **Cómo funciona:** Es como describir una receta. Tú *describes* cómo debería ser la UI en un momento dado, basándote en un "ingrediente" (el estado). No le dices a la UI *cómo* cambiar, solo *cuál* debería ser su apariencia final. Cuando el estado cambia, el framework de Compose, que es como un chef inteligente, se encarga automáticamente de "cocinar" de nuevo (recomponer) solo las partes de la UI que dependen de ese ingrediente.
+- **La Metáfora:** Simplemente declaras: "El marcador siempre debe mostrar el valor actual de la variable `score`". Cuando `score` cambia, el marcador se actualiza solo. No das más instrucciones.
+- **Ventajas:** Código más intuitivo, menos propenso a errores y una separación más clara entre los datos de la aplicación y cómo se muestran.
 
 ---
 
-## 2. Conceptos Fundamentales de Jetpack Compose
+## 2. Los Pilares de Jetpack Compose
 
-Estos son los pilares sobre los que se construye toda la aplicación.
+Estos son los conceptos sobre los que se construye toda la aplicación.
 
-### `@Composable`: Bloques de Construcción de la UI
-Una función marcada con `@Composable` es una pieza de tu interfaz. Puede ser tan simple como un texto o tan compleja como una pantalla entera.
+### `@Composable`: Los Ladrillos de tu UI
+Una función marcada con `@Composable` es un bloque de construcción de tu interfaz. Piensa en ellos como piezas de LEGO: puedes tener una pieza simple (`Text`) o una construcción compleja hecha de muchas piezas (`ProfileScreen`).
 
 -   **Reglas Clave:**
-    -   Debe ser `Unit` (no devolver nada).
+    -   Debe ser `Unit` (no devuelve nada).
     -   Solo puede ser llamada desde otra función `@Composable`.
-
-```kotlin
-// Ejemplo de un Composable simple
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello, $name!")
-}
-```
+    -   Debe ser rápida y sin "efectos secundarios" (como modificar una variable global), porque Compose puede llamarla muchas veces.
 
 ### `Modifier`: El Decorador Universal
 Un `Modifier` es una colección ordenada de decoraciones y comportamientos para un `Composable`. Es la forma estándar de personalizar la apariencia y la interacción.
 
--   **Encadenamiento:** Los modificadores se aplican en orden. Un `.padding()` antes de un `.background()` produce un resultado diferente a si se hace al revés.
+-   **El Orden Importa:** Los modificadores se aplican en secuencia. ¡Esto es muy importante! Observa la diferencia:
+
+    ```kotlin
+    // Ejemplo 1: Padding DENTRO del fondo
+    Modifier.background(Color.Yellow).padding(16.dp) 
+    // Resultado: El fondo amarillo ocupa todo el espacio, y el contenido dentro tiene un margen.
+
+    // Ejemplo 2: Padding FUERA del fondo
+    Modifier.padding(16.dp).background(Color.Yellow)
+    // Resultado: Se crea un espacio vacío de 16.dp alrededor, y solo el área interior es amarilla.
+    ```
+
+### `@Preview`: Tu Lienzo de Diseño
+Permite ver una vista previa de tus `Composables` en el editor. Es una herramienta increíblemente poderosa para acelerar el desarrollo. Puedes tener múltiples vistas previas para un mismo componente y probar diferentes configuraciones.
 
 ```kotlin
-Text(
-    text = "Hola, Mundo",
-    modifier = Modifier
-        .padding(16.dp)                  // Añade espacio interior
-        .background(Color.Yellow)        // Pone un fondo de color
-        .fillMaxWidth()                  // Hace que ocupe todo el ancho posible
-)
-```
+// Vista previa simple
+@Preview(name = "Default")
 
-### `@Preview`: Visualiza sin Compilar
-Permite ver una vista previa de tus `Composables` en el editor de Android Studio. Es una herramienta increíblemente poderosa para acelerar el desarrollo.
+// Vista previa con fondo y en modo nocturno
+@Preview(name = "Dark Mode", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 
-```kotlin
-@Preview(showBackground = true, name = "Vista Previa del Saludo")
+// Vista previa para un dispositivo específico
+@Preview(name = "Pixel 5", device = Devices.PIXEL_5)
+
 @Composable
-fun GreetingPreview() {
+fun MyComponentPreview() {
     Compose1Theme {
-        Greeting("Android")
+        MyComponent()
     }
 }
 ```
 
-### Estado y `remember`: La Memoria de tu UI
-El **estado** es cualquier valor que, al cambiar, debe provocar que la UI se actualice. En Compose, lo creamos con `mutableStateOf`.
+### Estado, `remember` y Recomposición: La Magia de Compose
+-   **Estado:** Cualquier valor que, al cambiar, debe provocar que la UI se actualice. Se crea con `val (value, setValue) = remember { mutableStateOf(initialValue) }` o, más comúnmente, `var value by remember { mutableStateOf(initialValue) }`.
+-   **Recomposición:** Es el proceso que ejecuta Compose para actualizar la UI cuando detecta un cambio en el estado. Es un proceso inteligente y eficiente: **solo los `Composables` que leen el estado que ha cambiado se vuelven a dibujar**, no la pantalla entera.
+-   **`remember`**: Le dice a Compose que "recuerde" el valor de una variable a través de las recomposiciones. Sin `remember`, la variable se reiniciaría a su valor inicial cada vez que la UI se redibuja.
+-   **`rememberSaveable`**: Es un `remember` con superpoderes. Además de sobrevivir a las recomposiciones, también sobrevive a cambios de configuración del dispositivo (como rotar la pantalla) o a que el sistema operativo elimine la actividad. Lo usamos para `currentDestination` para no perder la pantalla actual al girar el teléfono.
 
--   **Recomposición:** Cuando el valor de un estado cambia, Compose vuelve a ejecutar (recompone) automáticamente todos los `Composables` que leen ese estado.
--   **`remember`**: Para que una variable de estado sobreviva a las recomposiciones, debemos envolver su creación con `remember`. De lo contrario, se reiniciaría a su valor inicial en cada redibujo.
+### Elevación de Estado (State Hoisting): El Patrón Arquitectónico
+Es el patrón más importante en Compose. La idea es simple: si un dato es necesitado o puede ser modificado por varios componentes, su estado no debe vivir en ninguno de ellos, sino en un **ancestro común**.
 
-```kotlin
-// Ejemplo de un contador
-@Composable
-fun Counter() {
-    var count by remember { mutableStateOf(0) } // 'count' es el estado
+-   **La Metáfora:** Imagina que dos hermanos (`HomeScreen` y `FavoritesScreen`) quieren jugar con el mismo juguete (`favoriteItems`). El juguete no pertenece a ninguno de ellos, sino que lo guarda su padre (`Compose1App`). Si un hermano quiere usar el juguete o cambiarlo, se lo pide al padre.
+-   **Flujo de Datos y Eventos:**
+    1.  **El estado fluye hacia abajo:** El padre (`Compose1App`) pasa la lista de favoritos (`favoriteItems`) a los hijos (`HomeScreen`, `FavoritesScreen`).
+    2.  **Los eventos fluyen hacia arriba:** Cuando el usuario pulsa el corazón en `HomeScreen`, el hijo no modifica la lista directamente. En su lugar, llama a una función (`onToggleFavorite`) que le pasó el padre. Es el padre quien finalmente actualiza el estado, provocando una recomposición.
 
-    Button(onClick = { count++ }) { // Al hacer clic, el estado cambia
-        // Compose recompone este Text automáticamente cuando 'count' cambia
-        Text(text = "Has hecho clic $count veces")
-    }
-}
-```
-
-### Elevación de Estado (State Hoisting): El Patrón Clave
-Es el patrón más importante de Compose para crear componentes reutilizables y sin errores.
-
--   **Principio:** Un componente no debe tener su propio estado si ese estado necesita ser conocido o modificado por otros. En su lugar, el estado se "eleva" a un ancestro común.
--   **Flujo:** El estado fluye hacia abajo (del padre al hijo) y los eventos fluyen hacia arriba (del hijo al padre).
-
-En nuestro proyecto, `favoriteItems` es un estado que se eleva a `Compose1App`. `HomeScreen` lo recibe para saber qué mostrar (estado abajo) y notifica a `Compose1App` cuando un favorito cambia (evento arriba).
-
-```kotlin
-// PATRÓN DE ELEVACIÓN DE ESTADO
-
-// El padre gestiona el estado
-@Composable
-fun Screen() {
-    var name by remember { mutableStateOf("") }
-    // Pasa el estado y el evento al hijo
-    NameInput(name = name, onNameChange = { newName -> name = newName })
-}
-
-// El hijo es "tonto" (stateless). Solo recibe datos y emite eventos.
-@Composable
-fun NameInput(name: String, onNameChange: (String) -> Unit) {
-    TextField(value = name, onValueChange = onNameChange)
-}
-```
+Este patrón hace que los componentes hijos sean "tontos" (stateless) y, por tanto, más reutilizables y fáciles de probar.
 
 ---
 
-## 3. Guía de Referencia Rápida: Componentes y Layouts
+## 3. Arquitectura del Proyecto: Organizando el Caos
 
-### Layouts (`ui/layouts`)
+Una buena organización es clave para que un proyecto crezca de forma sostenible.
 
--   **`Column`**: Apila elementos verticalmente. `verticalArrangement` controla el espaciado y `horizontalAlignment` la alineación.
--   **`Row`**: Apila elementos horizontalmente. `horizontalArrangement` controla el espaciado y `verticalAlignment` la alineación.
--   **`Box`**: Superpone elementos. `contentAlignment` los posiciona. Usa `Modifier.align()` en un hijo para un control individual.
--   **`Scaffold`**: La estructura de pantalla de Material Design. Proporciona ranuras (slots) para `topBar`, `bottomBar`, `floatingActionButton`, etc.
--   **`LazyColumn` / `LazyRow`**: Listas eficientes. Usa `items(miLista) { item -> ... }` para renderizar los elementos.
-
-### Componentes (`ui/components`)
-
--   **`MyButton(onClick = { ... }, text = "Púlsame")`**: Un botón simple.
--   **`MyTextField(value = text, onValueChange = { text = it }, label = "Nombre")`**: Un campo de texto.
--   **`MyListItem(headlineText = "Título", supportingText = "Subtítulo")`**: Un elemento de lista estándar.
--   **`MySwitch(checked = activado, onCheckedChange = { activado = it }, text = "Opción")`**: Un interruptor.
--   **`MyDropdownMenu(label = "Elige", items = lista, selectedItem = sel, onItemSelected = { sel = it })`**: Un menú desplegable.
--   **`MyAlertDialog(onDismissRequest = { ... }, ...)`**: Un diálogo de alerta.
+-   **/ui/theme**: Define la apariencia de la aplicación (colores, tipografía, formas). `Theme.kt` aplica el tema y permite cambiar entre modo claro y oscuro.
+-   **/ui/components**: Contiene nuestros "ladrillos" de LEGO. Son `Composables` genéricos y reutilizables (`MyButton`, `MyTextField`). No saben nada sobre el resto de la aplicación.
+-   **/ui/layouts**: Sirven como referencia y ejemplos de los `Composables` de organización de Compose.
+-   **/ui/functions**: Contiene `Composables` más complejos que combinan componentes básicos para formar secciones o pantallas completas (`ProfileScreen`).
+-   **`MainActivity.kt`**: Es el "orquestador". Su única misión es gestionar el estado global, la navegación y decidir qué pantalla de alto nivel se muestra en cada momento.
 
 ---
 
-## 4. `MainActivity.kt`: El Orquestador de la Aplicación
+## 4. `MainActivity.kt`: El Cerebro de la Aplicación
 
-Este archivo es el cerebro de nuestra aplicación. Sus responsabilidades son:
+Este archivo es el centro de control. Sus responsabilidades son:
 
-1.  **Punto de Entrada**: Es la `Activity` que inicia el flujo de la UI.
-2.  **Fuente Única de Verdad (Single Source of Truth)**: Centraliza el estado que debe ser compartido por múltiples pantallas, como `currentDestination` (la pantalla actual) y `favoriteItems` (la lista de favoritos).
-3.  **Manejo de Navegación**: Utiliza `NavigationSuiteScaffold` para construir la barra de navegación. El bloque `when(currentDestination)` actúa como un "enrutador", decidiendo qué pantalla `Composable` debe mostrarse.
-4.  **Coordinación de Eventos Globales**: Gestiona el `SnackbarHostState` para que cualquier pantalla pueda solicitar la aparición de un `Snackbar`, centralizando la lógica de feedback al usuario.
+1.  **Punto de Entrada**: Es la `Activity` que lanza el flujo de la UI.
+2.  **Fuente Única de Verdad (Single Source of Truth)**: Centraliza el estado que debe ser compartido por múltiples pantallas, como `currentDestination` y `favoriteItems`. 
+3.  **Manejo de Navegación**: Utiliza `NavigationSuiteScaffold` para la barra de navegación y el bloque `when(currentDestination)` como un "enrutador", decidiendo qué pantalla mostrar.
+4.  **Coordinación de Eventos Globales**: Gestiona el `SnackbarHostState` para que cualquier pantalla pueda solicitar la aparición de un `Snackbar`.
 
 ---
 
 ## 5. Próximos Pasos y Ejercicios Sugeridos
 
-Ahora que entiendes la estructura, ¡es tu turno de expandir la aplicación!
+La mejor forma de aprender es practicando. ¡Intenta resolver estos retos!
 
--   **Ejercicio 1 (Fácil):** Modifica `ProfileScreen` para que el nombre y la biografía no estén fijos, sino que vengan de un estado en `Compose1App`.
--   **Ejercicio 2 (Intermedio):** Crea una nueva pantalla `SettingsScreen.kt` en `ui/functions`. Añade un nuevo destino en el `enum AppDestinations` y haz que se muestre al navegar a él. En esta pantalla, usa `MyListItem` y `MySwitch` para simular ajustes.
--   **Ejercicio 3 (Avanzado):** Haz que al pulsar el `ListItem` de "Cerrar Sesión" en `ProfileScreen`, se muestre el `MyAlertDialog` de confirmación. Si el usuario confirma, muestra un `Snackbar` que diga "Sesión cerrada".
+-   **Ejercicio 1 (Fácil): Elevar el Estado del Perfil**
+    -   **Objetivo:** El nombre y la biografía en `ProfileScreen` están fijos. Haz que sean dinámicos.
+    -   **Pista:** Crea dos nuevas variables de estado (`username` y `bio`) con `remember` en `Compose1App`. Pásalas como parámetros a `ProfileScreen`.
+
+-   **Ejercicio 2 (Intermedio): Crear la Pantalla de Ajustes**
+    -   **Objetivo:** Crear una pantalla de "Ajustes" y hacerla accesible desde la navegación.
+    -   **Paso 1:** Añade un nuevo destino `SETTINGS("Ajustes", Icons.Default.Settings)` al `enum AppDestinations`.
+    -   **Paso 2:** Crea un nuevo archivo `SettingsScreen.kt` en `ui/functions`.
+    -   **Paso 3:** Dentro, usa `MyListItem` y `MySwitch` para simular opciones como "Modo Oscuro", "Recibir Newsletter", etc.
+    -   **Paso 4:** Añade `AppDestinations.SETTINGS -> SettingsScreen()` en el `when` de `MainActivity.kt`.
+
+-   **Ejercicio 3 (Avanzado): Diálogo de Confirmación Funcional**
+    -   **Objetivo:** Hacer que el botón "Cerrar Sesión" en `ProfileScreen` funcione de verdad.
+    -   **Pista 1 (Elevación de Evento):** `ProfileScreen` no debe mostrar el diálogo directamente. Debe notificar a su padre (`Compose1App`) que quiere mostrarlo. Crea una `lambda` `onLogoutClick: () -> Unit` en `ProfileScreen` y llámala al pulsar el `ListItem`.
+    -   **Pista 2 (Estado del Diálogo):** En `Compose1App`, crea un estado `var showLogoutDialog by remember { mutableStateOf(false) }`. Cuando `onLogoutClick` se ejecute, cambia este estado a `true`.
+    -   **Pista 3 (Mostrar el Diálogo):** Llama a tu `ShowConfirmationDialog` desde `Compose1App`, pasándole el estado `showLogoutDialog`. Si el usuario confirma, muestra un `Snackbar`.
+
+-   **Reto Adicional (Experto): Cargar Imagen desde Internet**
+    -   **Objetivo:** Reemplazar la imagen de perfil local por una cargada desde una URL.
+    -   **Pista:** Investiga sobre librerías como [Coil](https://coil-kt.github.io/coil/compose/) o [Glide](https://bumptech.github.io/glide/). Necesitarás añadir su dependencia y usar el `Composable` que proporcionan (ej. `AsyncImage`) en lugar del `Image` estándar.
